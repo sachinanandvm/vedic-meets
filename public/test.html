@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Video Streaming Test</title>
+    <style>
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 4px; }
+        .success { background-color: #dff0d8; }
+        .error { background-color: #f2dede; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video Streaming Test</h1>
+        
+        <div>
+            <h3>Video Player</h3>
+            <video id="videoPlayer" controls width="100%">
+                <source src="/api/videos/stream/video1" type="video/mp4">
+            </video>
+        </div>
+
+        <div>
+            <h3>Test Controls</h3>
+            <button onclick="processVideo()">Process Video</button>
+            <button onclick="getMetadata()">Get Metadata</button>
+            <button onclick="testChunks()">Test Chunks</button>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        function showStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            status.innerHTML += `<div class="status ${isError ? 'error' : 'success'}">${message}</div>`;
+        }
+
+        async function processVideo() {
+            try {
+                const response = await fetch('/api/videos/process/video1', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                showStatus('Video processed successfully: ' + JSON.stringify(data));
+            } catch (error) {
+                showStatus('Error processing video: ' + error.message, true);
+            }
+        }
+
+        async function getMetadata() {
+            try {
+                const response = await fetch('/api/videos/metadata/video1');
+                const data = await response.json();
+                showStatus('Metadata retrieved: ' + JSON.stringify(data));
+            } catch (error) {
+                showStatus('Error getting metadata: ' + error.message, true);
+            }
+        }
+
+        async function testChunks() {
+            try {
+                const response = await fetch('/api/videos/chunk/video1/000');
+                showStatus('Chunk test successful: ' + response.status);
+            } catch (error) {
+                showStatus('Error testing chunks: ' + error.message, true);
+            }
+        }
+    </script>
+</body>
+</html>
