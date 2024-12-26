@@ -20,6 +20,7 @@ class VideoService {
                 videoId,
                 `chunk_${chunkIndex.padStart(3, '0')}.mp4`
             );
+            console.log('chunkPath', chunkPath);
             const chunk = await fs.readFile(chunkPath);
             return chunk;
         } catch (error) {
