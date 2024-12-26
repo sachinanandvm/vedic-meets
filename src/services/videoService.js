@@ -14,6 +14,7 @@ class VideoService {
 
     async getChunk(videoId, chunkIndex) {
         try {
+            console.log('getChunk', videoId, chunkIndex);
             const chunkPath = path.join(
                 videoProcessor.chunksDir,
                 videoId,
