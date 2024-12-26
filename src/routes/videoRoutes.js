@@ -6,5 +6,6 @@ router.get('/stream/:videoId', videoController.streamVideo);
 router.get('/chunk/:videoId/:chunkIndex', videoController.getVideoChunk);
 router.post('/process/:videoId', videoController.processVideo);
 router.get('/metadata/:videoId', videoController.getVideoMetadata);
+router.post('/upload', videoController.uploadVideo);
 
 module.exports = router;

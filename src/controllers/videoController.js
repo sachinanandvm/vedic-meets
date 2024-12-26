@@ -1,6 +1,34 @@
 const videoService = require('../services/videoService');
 const fs = require('fs');
 const path = require('path');
+const multer = require('multer');
+const { v4: uuidv4 } = require('uuid');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(__dirname, '../../videos'));
+    },
+    filename: (req, file, cb) => {
+        const videoId = uuidv4();
+        // Store videoId in request for later use
+        req.videoId = videoId;
+        cb(null, `${videoId}.mp4`);
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('video/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Not a video file'));
+        }
+    },
+    limits: {
+        fileSize: 500 * 1024 * 1024 // 500MB limit
+    }
+}).single('video');
 
 exports.streamVideo = async (req, res) => {
     const { videoId } = req.params;
@@ -90,4 +118,39 @@ exports.getVideoMetadata = async (req, res) => {
             error: error.message
         });
     }
+};
+
+exports.uploadVideo = (req, res) => {
+    upload(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({
+                success: false,
+                error: err.message
+            });
+        }
+
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                error: 'No video file provided'
+            });
+        }
+
+        try {
+            // Return the videoId that was generated during upload
+            res.status(201).json({
+                success: true,
+                data: {
+                    videoId: req.videoId,
+                    originalName: req.file.originalname,
+                    size: req.file.size
+                }
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+    });
 };
