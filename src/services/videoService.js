@@ -6,6 +6,7 @@ class VideoService {
     async processAndGetChunks(videoId) {
         try {
             const chunkInfo = await videoProcessor.processVideo(videoId);
+            console.log('chunkInfo', chunkInfo);
             return chunkInfo;
         } catch (error) {
             throw new Error(`Failed to process video: ${error.message}`);
