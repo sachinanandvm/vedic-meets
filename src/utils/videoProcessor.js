@@ -26,10 +26,11 @@ class VideoProcessor {
     async processVideo(videoId) {
         const videoPath = path.join(this.videosDir, `${videoId}.mp4`);
         const outputPath = path.join(this.chunksDir, videoId);
+        console.log('videoPath', videoPath);
 
         try {
             await fs.mkdir(outputPath, { recursive: true });
-
+            console.log('outputPath', outputPath);
             return new Promise((resolve, reject) => {
                 ffmpeg(videoPath)
                     .outputOptions([
